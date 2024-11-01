@@ -1,4 +1,4 @@
-from typing import Optional
+from datetime import date
 from pydantic import BaseModel
 
 class OrderSchema(BaseModel):
@@ -6,6 +6,5 @@ class OrderSchema(BaseModel):
     customer_name: str
     customer_email: str
     quantity: int
-    order_date: str
-    total_price: int
+    order_date: date
     destination_city: str

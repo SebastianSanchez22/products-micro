@@ -1,5 +1,5 @@
 
-from sqlalchemy import Column, Integer, String, Date, Float, ForeignKey, Relationship
+from sqlalchemy import Column, Integer, String, Date, Float, ForeignKey
 from sqlalchemy.orm import backref, Relationship
 
 from src.entities.models.products import Base, TblProducts
