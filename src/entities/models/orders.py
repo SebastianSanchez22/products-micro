@@ -1,5 +1,5 @@
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Relationship
+from sqlalchemy import Column, Integer, String, Date, Float, ForeignKey, Relationship
 from sqlalchemy.orm import backref, Relationship
 
 from src.entities.models.products import Base, TblProducts
@@ -12,8 +12,8 @@ class TblOrders(Base):
     customer_name = Column(String(50), nullable=False)
     customer_email = Column(String(50), nullable=False)
     quantity = Column(Integer, nullable=False)
-    order_date = Column(String(50), nullable=False)
-    total_price = Column(Integer, nullable=False)
+    order_date = Column(Date, nullable=False)
+    total_price = Column(Float, nullable=False)
     destination_city = Column(String(50), nullable=False)
     products = Relationship(TblProducts, backref= backref("products_details", cascade="all, delete-orphan"))
 

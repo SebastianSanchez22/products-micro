@@ -7,6 +7,10 @@ class Products():
         self.db = Database()
         self.table = TblProducts
 
+    def get_one(self, product_id: int) -> dict:
+        product = self.db.get_one(self.table, product_id)
+        return product.as_dict()
+
     def get_all(self, skip: int = 0, limit: int = 10) -> list:
         products = self.db.get_all(self.table, skip, limit)
         return list(map(lambda product: product.as_dict(), products))

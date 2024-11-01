@@ -1,5 +1,7 @@
 from src.resources.orders import Orders
 
+
+
 class OrdersService(object):
 
     table = None
@@ -9,6 +11,6 @@ class OrdersService(object):
 
     def get_all(self, skip: int, limit: int) -> list:
         return self.table.get_all(skip, limit)
-
-    def add_one(self, product: dict) -> dict:
-        return self.table.add_one(product)
+    
+    def add_one(self, order: dict) -> dict:
+        return self.table.add_one(order)

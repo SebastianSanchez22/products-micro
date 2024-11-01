@@ -13,7 +13,7 @@ class Database():
     def __init__(self):
         if self.session is None:
             self.engine = create_engine(DATABASE_CREDENTIALS)
-            self.Session = self.__create_session(self.engine)
+            self.session = self.__create_session(self.engine)
 
     def _create_session(self, url) -> sessionmaker:
         engine = create_engine(url, poolclass=NullPool)
@@ -21,33 +21,55 @@ class Database():
         metadata.reflect(bind=engine)
         session = sessionmaker(bind=engine)
         return session()
+    
+    def __del__(self):
+        if self.session:
+            self.session.close()
+    
+    def get_one(self, **kwargs) -> dict:
+        try:
+            query = self.session.query(kwargs['table'])
+            if 'filter' in kwargs:
+                query = query.filter_by(**kwargs['filter'])
+            product = query.first()
+            return product
+        except Exception as e:
+            self.session.rollback()
+            raise e
 
 
     def get_all(self, table, skip: int, limit: int) -> list:
-        session = self.Session()
-        products = session.query(table).offset(skip).limit(limit).all()
-        session.close()
-        return products
+        try:
+            products = self.session.query(table).offset(skip).limit(limit).all()
+            return products
+        except Exception as e:
+            self.session.rollback()
+            raise e
 
     def add_one(self, table, product: dict) -> dict:
-        session = self.Session()
-        new_product = table(**product)
-        session.add(new_product)
-        session.commit()
-        session.refresh(new_product)
-        session.close()
-        return new_product
+        try:
+            new_product = table(**product)
+            self.session.add(new_product)
+            self.session.commit()
+            return new_product
+        except Exception as e:
+            self.session.rollback()
+            raise e
 
     def update_one(self, table, product_id: int, product: dict) -> dict:
-        session = self.Session()
-        updated_product = session.query(table).filter(table.id == product_id).update(product)
-        session.commit()
-        session.close()
-        return updated_product
+        try:
+            updated_product = self.session.query(table).filter(table.id == product_id).update(product)
+            self.session.commit()
+            return updated_product
+        except Exception as e:
+            self.session.rollback()
+            raise e
 
     def delete_one(self, table, product_id: int) -> dict:
-        session = self.Session()
-        deleted_product = session.query(table).filter(table.id == product_id).delete()
-        session.commit()
-        session.close()
-        return deleted_product
+        try:
+            deleted_product = self.session.query(table).filter(table.id == product_id).delete()
+            self.session.commit()
+            return deleted_product
+        except Exception as e:
+            self.session.rollback()
+            raise e
