@@ -4,6 +4,8 @@ from sqlalchemy.pool import NullPool
 from src.config.env import DATABASE_CREDENTIALS
 
 class Database():
+    __instance = None
+    session = None
 
     def __new__(cls, *args, **kwargs):
         if Database.__instance is None:
@@ -12,14 +14,13 @@ class Database():
 
     def __init__(self):
         if self.session is None:
-            self.engine = create_engine(DATABASE_CREDENTIALS)
-            self.session = self.__create_session(self.engine)
+            self.engine = create_engine(DATABASE_CREDENTIALS, poolclass=NullPool)
+            self.session = self._create_session()
 
-    def _create_session(self, url) -> sessionmaker:
-        engine = create_engine(url, poolclass=NullPool)
+    def _create_session(self) -> sessionmaker:
         metadata = MetaData()
-        metadata.reflect(bind=engine)
-        session = sessionmaker(bind=engine)
+        metadata.reflect(bind=self.engine)
+        session = sessionmaker(bind=self.engine)
         return session()
     
     def __del__(self):
