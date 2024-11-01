@@ -24,5 +24,6 @@ class Orders():
             raise ValueError("Not enough products")
         product.stock -= quantity
         self.db.update_one(self.products_table, product_id, product.as_dict())
+        order["total_price"] = product.price * quantity
         new_order = self.db.add_one(self.table, order)
         return new_order.as_dict()
